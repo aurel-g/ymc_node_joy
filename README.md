@@ -93,6 +93,14 @@ Essential components:
 - you can find it in right mouse menu : `ymc/caption`
 - ~~you can find it in right mouse menu : `utils/ymc/caption` (as alias)~~
 
+## Demo
+<!-- inject demo here -->
+- workflow demo:
+<div style="text-align: center;">
+  <img src="./shotscreen/nodes.demo.png" alt="console" width="256">
+</div>
+
+
 ## Based-on
 
 - pypi package [yors_comfyui_node_setup](https://pypi.org/project/yors_comfyui_node_setup/) -  setup comfyui custom nodes easily

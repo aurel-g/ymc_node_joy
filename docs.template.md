@@ -43,6 +43,10 @@ git clone https://github.com/ymc-github/{node_name}
 - you can find it in right mouse menu : `{node_right_menu}`
 - ~~you can find it in right mouse menu : `utils/{node_right_menu}` (as alias)~~
 
+## Demo
+<!-- inject demo here -->
+<!-- inject-demos -->
+
 ## Based-on
 
 - pypi package [yors_comfyui_node_setup](https://pypi.org/project/yors_comfyui_node_setup/) -  setup comfyui custom nodes easily
