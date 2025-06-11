@@ -44,6 +44,7 @@ git clone https://github.com/ymc-github/{node_name}
 - ~~you can find it in right mouse menu : `utils/{node_right_menu}` (as alias)~~
 
 ## Demo
+
 <!-- inject demo here -->
 <!-- inject-demos -->
 
@@ -64,7 +65,7 @@ git clone https://github.com/ymc-github/{node_name}
 
 ## Author
 
-ymc-github <ymc.github@gmail.com>
+<!-- ymc-github <ymc.github@gmail.com> -->
 
 name|email|desciption
 :--|:--|:--

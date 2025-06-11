@@ -94,6 +94,7 @@ Essential components:
 - ~~you can find it in right mouse menu : `utils/ymc/caption` (as alias)~~
 
 ## Demo
+
 <!-- inject demo here -->
 - workflow demo:
 <div style="text-align: center;">
@@ -118,7 +119,7 @@ Essential components:
 
 ## Author
 
-ymc-github <ymc.github@gmail.com>
+<!-- ymc-github <ymc.github@gmail.com> -->
 
 name|email|desciption
 :--|:--|:--
