@@ -89,7 +89,7 @@ Essential components:
 
 ## Usage
 
-- you can find it in search box : double click + typing keywords (eg: `joy - `, `caption`)
+- you can find it in search box : double click + typing keywords (eg: `joy`, `caption`)
 - you can find it in right mouse menu : `ymc/caption`
 - ~~you can find it in right mouse menu : `utils/ymc/caption` (as alias)~~
 

@@ -39,7 +39,7 @@ git clone https://github.com/ymc-github/{node_name}
 
 ## Usage
 
-- you can find it in search box : double click + typing keywords (eg: `joy - `, `caption`)
+- you can find it in search box : double click + typing keywords (eg: `joy`, `caption`)
 - you can find it in right mouse menu : `{node_right_menu}`
 - ~~you can find it in right mouse menu : `utils/{node_right_menu}` (as alias)~~
 
