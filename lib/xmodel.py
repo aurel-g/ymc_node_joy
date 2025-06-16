@@ -23,6 +23,24 @@ from transformers import AutoProcessor
 #         print("No GPU available, using the CPU instead.")  
 #     return device
 
+def get_comfyui_models_dir() -> str:
+    """
+    Get ComfyUI models directory path by traversing up from current custom nodes directory
+    
+    Returns:
+        str: Absolute path to ComfyUI models directory
+    """
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    
+    # Traverse up 3 levels from custom_nodes to reach ComfyUI root
+    comfyui_root = os.path.dirname(os.path.dirname(os.path.dirname(current_dir)))
+    models_dir = os.path.join(comfyui_root, 'models')
+    
+    if not os.path.exists(models_dir):
+        raise FileNotFoundError(f"ComfyUI models directory not found at: {models_dir}")
+        
+    return models_dir
+
 # 下载hg 模型到本地
 def download_hg_model(model_id:str,exDir:str=''):
     # 下载本地

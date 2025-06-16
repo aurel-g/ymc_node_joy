@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from typing import Optional, Tuple, List
+import time
 
 import torch
 import torch.nn as nn
@@ -352,9 +353,12 @@ class JoyCaptionFromDir(JoyCaptionBase):
         files = []
         captions = []
         
-        for img_file in image_files:
+        total_images = len(image_files)
+        for index, img_file in enumerate(image_files, 1):
             img_path = os.path.join(image_dir, img_file)
             try:
+                start_time = time.time()
+                
                 image = Image.open(img_path)
                 tensor_image = pil2tensor(image)
                 caption = self.generate_caption(
@@ -368,10 +372,13 @@ class JoyCaptionFromDir(JoyCaptionBase):
 
                 files.append(img_path)
                 captions.append(caption)
-                print(f"Processed: {img_file}")
+                
+                elapsed = time.time() - start_time
+                print(f"{index}/{total_images}:{elapsed:.2f} s - Processed: {img_file}")
+                
             except Exception as e:
-                # captions.append(f"{img_file}: Error - {str(e)}")
-                print(f"{img_file}: Error - {str(e)}")
+                elapsed = time.time() - start_time if 'start_time' in locals() else 0
+                print(f"{index}/{total_images}:{elapsed:.2f} s - Error: {img_file} - {str(e)}")
                 continue
         if not cache:
             self.pipeline.clear_cache()
