@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from typing import Optional, Tuple, List
-import time
 
 import torch
 import torch.nn as nn
@@ -146,6 +145,11 @@ class JoyCaptionBase:
             
         # Convert and preprocess image
         input_image = tensor2pil(image)
+        # fix "Unable to infer channel dimension format"
+        # the CLIP processor cannot determine the color channel format (RGB/RGBA) from the input images
+        if input_image.mode != 'RGB':
+          input_image = input_image.convert('RGB')
+
         p_image = self.pipeline.clip_processor(
             images=input_image, 
             return_tensors='pt'
@@ -219,6 +223,7 @@ class JoyCaptionLoad(JoyCaptionBase):
     RETURN_TYPES = ("JoyPipeline",)
     FUNCTION = "load"
     OUTPUT_NODE = True
+    @classmethod
     def IS_CHANGED(cls, **kwargs):
         return float("NaN")
     def load(self, model: str) -> Tuple[JoyPipeline]:
@@ -281,6 +286,7 @@ class JoyCaption(JoyCaptionBase):
             return (caption,)
         except Exception as e:
             raise RuntimeError(f"Caption generation failed: {str(e)}")
+    @classmethod
     def IS_CHANGED(cls, **kwargs):
         return float("NaN")
 
@@ -312,6 +318,11 @@ class JoyCaptionFromDir(JoyCaptionBase):
                     "step": 0.01
                 }),
                 "cache": ("BOOLEAN", {"default": False}),
+                "trigger": ("STRING", {
+                    "default": "", 
+                    "multiline": False
+                }),
+                "save_caption": ("BOOLEAN", {"default": False}),
             }
         }
 
@@ -324,8 +335,24 @@ class JoyCaptionFromDir(JoyCaptionBase):
     RETURN_NAMES = ("image_files", "captions")
     FUNCTION = "generate_for_dir"
 
+    @classmethod
     def IS_CHANGED(cls, **kwargs):
         return float("NaN")
+
+    def save_caption(self, image_path: str, caption: str,save:bool=False) -> None:
+        """Save caption to a text file in the same directory as the image."""
+        if not save:
+          return 
+        image_dir = os.path.dirname(image_path)
+        caption_file = os.path.join(image_dir, f"{os.path.splitext(os.path.basename(image_path))[0]}.txt")
+        with open(caption_file, 'w') as f:
+            f.write(caption)
+        print(f"Caption saved to: {caption_file}")
+    def std_caption(self,caption:str,trigger:str=''):
+        res=f"{trigger},{caption}"
+        # ensure caption to be in oneline
+        res = ' '.join(res.split())
+        return res
     def generate_for_dir(
         self,
         joy_pipeline: JoyPipeline,
@@ -333,7 +360,9 @@ class JoyCaptionFromDir(JoyCaptionBase):
         prompt: str,
         max_new_tokens: int,
         temperature: float,
-        cache: bool
+        cache: bool,
+        trigger:str,
+        save_caption:bool
     ) -> Tuple[str, str]:
 
         if not os.path.isdir(image_dir):
@@ -353,13 +382,14 @@ class JoyCaptionFromDir(JoyCaptionBase):
         files = []
         captions = []
         
-        total_images = len(image_files)
-        for index, img_file in enumerate(image_files, 1):
+        for img_file in image_files:
             img_path = os.path.join(image_dir, img_file)
             try:
-                start_time = time.time()
-                
                 image = Image.open(img_path)
+                # Ensure RGB format before conversion
+                if image.mode != 'RGB':
+                    image = image.convert('RGB')
+
                 tensor_image = pil2tensor(image)
                 caption = self.generate_caption(
                     tensor_image, 
@@ -367,22 +397,24 @@ class JoyCaptionFromDir(JoyCaptionBase):
                     max_new_tokens, 
                     temperature
                 )
-                # ensure caption to be in oneline
-                caption = ' '.join(caption.split())
+                caption=self.std_caption(caption,trigger)
 
                 files.append(img_path)
                 captions.append(caption)
-                
-                elapsed = time.time() - start_time
-                print(f"{index}/{total_images}:{elapsed:.2f} s - Processed: {img_file}")
-                
+                print(f"Processed: {img_file}")
+                # save caption to txt file
+                self.save_caption(img_path, caption,save_caption)
+               
             except Exception as e:
-                elapsed = time.time() - start_time if 'start_time' in locals() else 0
-                print(f"{index}/{total_images}:{elapsed:.2f} s - Error: {img_file} - {str(e)}")
+                # captions.append(f"{img_file}: Error - {str(e)}")
+                print(f"{img_file}: Error - {str(e)}")
+                captions.append(',,,')
+                files.append(img_path)
+                self.save_caption(img_path, ',,,',save_caption)
                 continue
         if not cache:
             self.pipeline.clear_cache()
-            
+
         return (
             "\n".join(files), 
             "\n".join(captions)
