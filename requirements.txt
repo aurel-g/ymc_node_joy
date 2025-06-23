@@ -16,6 +16,7 @@
 # yors_pano_ansi_color==1.2.1
 yors_comfyui_node_setup
 yors_pano_ansi_color
+yors-pano-path-util
 
 # Optional dependencies (for advanced features)
 # bitsandbytes==0.45.0
